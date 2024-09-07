@@ -1,5 +1,5 @@
 import pytest
-from ..ioutils import getinput, IO__LEFT_PAD, NLBR
+from pyergo.ioutils import getinput, IO__LEFT_PAD, NLBR
 from unittest.mock import patch
 
 @pytest.fixture
