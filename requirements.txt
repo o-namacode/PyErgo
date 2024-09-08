@@ -4,4 +4,6 @@ pytest-cov
 
 # Encryption and Cryptography
 cryptography
+bcrypt  
+
 
