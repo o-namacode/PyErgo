@@ -8,7 +8,7 @@ def Print(
         *args,
         max_width: int = IO__DEFAULT_MAX_WIDTH,
         left_pad: int = IO__LEFT_PAD,
-        nl: bool = True,
+        nl: int = 0,
 
         break_on_hyphens: bool = True,
         break_long_words: bool = False,
@@ -20,6 +20,8 @@ def Print(
         tabsize: int = 4,
 
         join_nl: bool = True,
+
+        multiline_str : bool = False,
 ):
     """
     Print text to the console.
@@ -28,7 +30,6 @@ def Print(
         args (Any): The arguments to print.
         max_width (int, optional): The maximum width of the text. Defaults to IO__DEFAULT_MAX_WIDTH.
         left_pad (int, optional): The left padding to print. Defaults to IO__LEFT_PAD.
-        nl (bool, optional): Whether to print a new line. Defaults to True.
         break_on_hyphens (bool, optional): Whether to break on hyphens. Defaults to True.
         break_long_words (bool, optional): Whether to break long words. Defaults to False.
         break_on_whitespace (bool, optional): Whether to break on whitespace. Defaults to True.
@@ -36,6 +37,7 @@ def Print(
         expand_tabs (bool, optional): Whether to expand tabs. Defaults to True.
         fix_sentence_endings (bool, optional): Whether to fix sentence endings. Defaults to True.
         tabsize (int, optional): The size of a tab. Defaults to 4.
+        nl (int, optional): The number of new lines to print. Defaults to 0.
     """
 
     if len(args) == 1:
@@ -43,25 +45,30 @@ def Print(
     else:
         text = NLBR.join(args) if join_nl else " ".join(args)
 
-    wrapped_text = textwrap.fill(
-        text,
-        max_width,
+    if multiline_str:
+        wrapped_text = text
+    else:        
+        wrapped_text = textwrap.fill(
+            text,
+            max_width,
 
-        initial_indent=get_left_pad_str(left_pad),
-        subsequent_indent=get_left_pad_str(left_pad),
+            initial_indent=get_left_pad_str(left_pad),
+            subsequent_indent=get_left_pad_str(left_pad),
 
-        tabsize=tabsize,
-        expand_tabs=expand_tabs,
+            tabsize=tabsize,
+            expand_tabs=expand_tabs,
 
-        break_on_hyphens=break_on_hyphens,
-        break_long_words=break_long_words,
-        break_on_whitespace=break_on_whitespace,
+            break_on_hyphens=break_on_hyphens,
+            break_long_words=break_long_words,
+            break_on_whitespace=break_on_whitespace,
 
-        drop_whitespace=drop_whitespace,
-        fix_sentence_endings=fix_sentence_endings
-    )
+            drop_whitespace=drop_whitespace,
+            fix_sentence_endings=fix_sentence_endings
+        )
+
+    wrapped_text = wrapped_text + NLBR * nl
         
-    print(wrapped_text, end='\n' if nl else '')
+    print(wrapped_text, end='')
 
     
 
