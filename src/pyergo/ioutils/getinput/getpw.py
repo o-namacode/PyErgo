@@ -13,6 +13,20 @@ def getpw(
 
         strip: bool = True,
 ):
+    """
+    Get password from the user.
+
+    Args:
+        prompt (Optional[str], optional): The prompt to print. Defaults to None.
+        left_pad (Optional[int], optional): The left padding to print. Defaults to IO__LEFT_PAD.
+        cursor (Optional[str], optional): The cursor to print. Defaults to None.
+        nl (bool, optional): Whether to print a new line. Defaults to True.
+        strip (bool, optional): Whether to strip the input. Defaults to True.
+
+    Returns:
+        str: The password.
+    """
+
     if cursor is None:
         cursor = '> '
     cursor_str = cursor + "  "

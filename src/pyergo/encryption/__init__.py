@@ -1,1 +1,1 @@
-ncrypt
+from .ncrypt import EnCrypt
