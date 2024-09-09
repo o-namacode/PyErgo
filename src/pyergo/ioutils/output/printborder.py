@@ -1,7 +1,7 @@
 from ..constants import IO__DEFAULT_MAX_WIDTH, IO__DEFAULT_BORDER_CHAR
 from .print_ import Print
 
-def PrintBorder(width: int = IO__DEFAULT_MAX_WIDTH, border_char: str = IO__DEFAULT_BORDER_CHAR, nl: int = 0):
+def PrintBorder(width: int = IO__DEFAULT_MAX_WIDTH, border_char: str = IO__DEFAULT_BORDER_CHAR, nl: int = 1):
     """
     Prints a border line with the specified width and character.
 
@@ -15,4 +15,4 @@ def PrintBorder(width: int = IO__DEFAULT_MAX_WIDTH, border_char: str = IO__DEFAU
     """
     border = border_char * width
 
-    Print(border, nl=nl, concat_nl=False)
+    Print(border, nl=nl, multiline_str=True)

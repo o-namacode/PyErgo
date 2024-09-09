@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 
 
 class IPasswordManager (ABC):
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def HashPassword(password: str) -> str:
         """
         Hash a password.
@@ -16,8 +16,8 @@ class IPasswordManager (ABC):
         """
         pass
     
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def VerifyPassword(plain_password: str, hashed_password: str) -> bool:
         """
         Verify a plain-text password against a hashed password.
@@ -31,8 +31,8 @@ class IPasswordManager (ABC):
         """
         pass
 
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def validate_password(password: str, min_length: int = 8, require_uppercase: bool = True,
                            require_lowercase: bool = True, require_digit: bool = True,
                            require_special: bool = True, **kwargs) -> bool:

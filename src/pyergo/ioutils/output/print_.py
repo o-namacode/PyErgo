@@ -8,12 +8,11 @@ def Print(
         *args,
         max_width: int = IO__DEFAULT_MAX_WIDTH,
         left_pad: int = IO__LEFT_PAD,
-        nl: int = 0,
+        nl: int = 1,
 
         break_on_hyphens: bool = True,
         break_long_words: bool = False,
         
-        break_on_whitespace: bool = True,
         drop_whitespace: bool = True,
         expand_tabs: bool = True,
         fix_sentence_endings: bool = True,
@@ -38,6 +37,7 @@ def Print(
         fix_sentence_endings (bool, optional): Whether to fix sentence endings. Defaults to True.
         tabsize (int, optional): The size of a tab. Defaults to 4.
         nl (int, optional): The number of new lines to print. Defaults to 0.
+        multiline_str (bool, optional): Whether to print a multiline string. Defaults to False.
     """
 
     if len(args) == 1:
@@ -50,7 +50,7 @@ def Print(
     else:        
         wrapped_text = textwrap.fill(
             text,
-            max_width,
+            max_width + left_pad,
 
             initial_indent=get_left_pad_str(left_pad),
             subsequent_indent=get_left_pad_str(left_pad),
@@ -60,15 +60,16 @@ def Print(
 
             break_on_hyphens=break_on_hyphens,
             break_long_words=break_long_words,
-            break_on_whitespace=break_on_whitespace,
 
             drop_whitespace=drop_whitespace,
             fix_sentence_endings=fix_sentence_endings
         )
 
     wrapped_text = wrapped_text + NLBR * nl
-        
-    print(wrapped_text, end='')
-
     
+    content = ""
+    for line in wrapped_text.splitlines():
+        content += get_left_pad_str(left_pad) + line.strip() + NLBR
+    
+    print(content, end='')
 
