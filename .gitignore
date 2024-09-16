@@ -1,3 +1,8 @@
+# Application Directories and Files
+.pyergo/
+*.pye
+
+
 # Python
 __pycache__/
 *.py[cod]
