@@ -52,9 +52,6 @@ def getinput(
             _prompt += NLBR
         _prompt += cursor_str if not nl else get_left_pad_str(left_pad) + cursor_str
 
-        if nl:
-            _prompt += NLBR
-
         ui = input(_prompt)
 
         if not ui:
