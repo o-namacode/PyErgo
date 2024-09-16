@@ -1,8 +1,10 @@
 from os import system
 from typing import Callable, Optional, Union, overload
 
+from ...exceptions.err_commmand_not_found import CommandNotFoundError
+
 from ...ioutils.constants import IO__DEFAULT_MAX_WIDTH
-from ...exceptions import ArgumentMissingError, CommandNotFoundError
+from ...exceptions.err_argument_missing import ArgumentMissingError
 
 from ...ioutils.output import PrintBorder, PrintWithBorder, PrintLines, Print
 from ...ioutils.getinput import getinput
@@ -10,6 +12,20 @@ from ...ioutils.getinput import getinput
 from .stubs import MenuItem
 
 class Menu:
+    """
+    A class to create and manage a menu system.
+
+    Attributes:
+        title (str): The title of the menu.
+        description (Optional[str]): A description of the menu.
+        menu_items (list[Union[MenuItem, 'Menu']]): The items in the menu.
+        f_top_level (bool): Flag indicating if the menu is a top-level menu.
+        f_in_loop (bool): Flag indicating if the menu is currently in a loop.
+        f_exit (bool): Flag indicating if the menu should exit.
+        f_submenu (bool): Flag indicating if the menu is a submenu.
+        parent (Optional['Menu']): The parent menu if this is a submenu.
+    """
+
     def __init__(
             self,
             title: str,
@@ -48,6 +64,12 @@ class Menu:
 
     @property
     def key(self) -> str:
+        """
+        Returns the unique key for the menu, generated from the title if not provided.
+
+        Returns:
+            str: The unique key for the menu.
+        """
         if hasattr(self,'__key'):
             return self.__key
 
@@ -55,28 +77,61 @@ class Menu:
 
     @property
     def issubmenu(self) -> bool:
+        """
+        Checks if the menu is a submenu.
+
+        Returns:
+            bool: True if the menu is a submenu, False otherwise.
+        """
         return hasattr(self,'__key') and hasattr(self,'parent')
 
 
     def clear(self):
+        """
+        Clears all menu items from the menu.
+        """
         self.menu_items = []
     
     def build(self):
+        """
+        Builds the menu using the provided menu builder function.
+        """
         self._builder(self)
 
     def reset(self):
+        """
+        Resets the menu by clearing and rebuilding it.
+        """
         self.clear()
         self.build()
     
     @overload
     def add(self, key: str, description: str, action: Callable, display_condition: Union[bool, Callable] = True) -> 'Menu':
+        """
+        Overloaded method to add a menu item using key, description, action, and display condition.
+        """
         ...
 
     @overload
     def add(self, item: MenuItem) -> 'Menu':
+        """
+        Overloaded method to add a MenuItem directly.
+        """
         ...
     
     def add(self, item_or_key: Union[str, MenuItem], description: Optional[str] = None, action: Optional[Callable] = None, display_condition: Union[bool, Callable] = True) -> 'Menu':
+        """
+        Adds a menu item or a key to the menu.
+
+        Args:
+            item_or_key (Union[str, MenuItem]): The key or MenuItem to add.
+            description (Optional[str]): Description of the menu item.
+            action (Optional[Callable]): Action to execute when the item is selected.
+            display_condition (Union[bool, Callable]): Condition for displaying the item.
+
+        Returns:
+            Menu: The current menu instance.
+        """
         if isinstance(item_or_key, MenuItem):
             self.menu_items.append(item_or_key)
         else:
@@ -92,6 +147,15 @@ class Menu:
         return self
 
     def remove(self, item_or_key: Union[str, MenuItem]) -> 'Menu':
+        """
+        Removes a menu item by key or MenuItem.
+
+        Args:
+            item_or_key (Union[str, MenuItem]): The key or MenuItem to remove.
+
+        Returns:
+            Menu: The current menu instance.
+        """
         if isinstance(item_or_key, MenuItem):
             self.menu_items.remove(item_or_key)
         else:
@@ -101,23 +165,81 @@ class Menu:
 
     @property
     def commands(self) -> list[str]:
+        """
+        Returns a list of active command keys from the menu items.
+
+        Returns:
+            list[str]: List of active command keys.
+        """
         return [item.key for item in self.menu_items if isinstance(item, MenuItem) and item.active]
 
     @property
     def commands_visible(self) -> list[str]:
+        """
+        Returns a list of visible command keys from the menu
+        """
         return [item.key for item in self.menu_items if isinstance(item, MenuItem) and item.visible]
         
+    def commands_str(self, sort: bool = False) -> str:
+        """
+        Generates a string representation of the commands.
+
+        Args:
+            sort (bool): Whether to sort the commands.
+
+        Returns:
+            str: String representation of the commands.
+        """
+        cmds = []
+        # Logic to generate command strings
+        if sort:
+            cmds = sorted(self.commands)
+        else:
+            cmds = self.commands
+        return ", ".join(cmds)
 
     def exists(self, key: str) -> bool:
+        """
+        Checks if a command exists in the menu.
+
+        Args:
+            key (str): The command key to check.
+
+        Returns:
+            bool: True if the command exists, False otherwise.
+        """
         return key in self.commands
-    
+
     def get(self, key: str) -> Optional[MenuItem]:
+        """
+        Retrieves a MenuItem by its key.
+
+        Args:
+            key (str): The command key.
+
+        Returns:
+            Optional[MenuItem]: The MenuItem if found, None otherwise.
+        """
         for item in self.menu_items:
             if isinstance(item, MenuItem) and item.key == key:
                 return item
         return None
 
     def execute(self, key: str, *args, **kwargs):
+        """
+        Executes the action associated with a command key.
+
+        Args:
+            key (str): The command key.
+            *args: Additional arguments for the action.
+            **kwargs: Additional keyword arguments for the action.
+
+        Returns:
+            Any: The result of the action execution.
+
+        Raises:
+            CommandNotFoundError: If the command key does not exist.
+        """
         item = self.get(key)
         if item:
             args = item.action_args + args
@@ -125,7 +247,7 @@ class Menu:
             return item.execute(*args, **kwargs)
         else:
             raise CommandNotFoundError(key)
-    
+
     def display_menu(
         self,
         inline: bool = False,
@@ -182,13 +304,15 @@ class Menu:
             fn_loop_step :  callable = lambda: None,
 
             fn_clear_console :  callable = lambda: system("cls"),
+            clear_console : bool = True,
 
             sort_menu_items :  bool = True,
             ):
         self.f_in_loop = True
         fn_preloop()
         while not self.f_exit:
-            fn_clear_console()
+            if clear_console:
+                fn_clear_console()
 
             if self.f_exit:
                 break

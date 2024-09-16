@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import Mock
 
 from pyergo.console.menu import Menu, MenuItem
-from pyergo.exceptions import CommandNotFoundError
+from pyergo.exceptions.err_commmand_not_found import CommandNotFoundError
 
 @pytest.fixture
 def menu():

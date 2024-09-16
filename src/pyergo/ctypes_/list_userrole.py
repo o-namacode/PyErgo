@@ -12,8 +12,8 @@ class UserRoleList(List[UserRole]):
         Return a string representation of the UserRoleList.
 
         Returns:
-            str: A string representation of the UserRoleList.
-            """
+            str: A string representation of the UserRoleList, listing all roles in title case.
+        """
         return f"UserRoles({', '.join([role.value.title() for role in self])})"
 
     def __repr__(self):
@@ -21,8 +21,8 @@ class UserRoleList(List[UserRole]):
         Return a string representation of the UserRoleList.
 
         Returns:
-            str: A string representation of the UserRoleList.
-            """
+            str: A string representation of the UserRoleList, listing all roles in title case.
+        """
         return f"UserRoles({', '.join([role.value.title() for role in self])})"
     
     def to_dict(self) -> List[str]:
@@ -30,7 +30,7 @@ class UserRoleList(List[UserRole]):
         Generate a JSON-safe dictionary representation of the UserRoleList.
         
         Returns:
-            List[str]: A list of role values as strings.
+            List[str]: A list of role values as strings, suitable for JSON serialization.
         """
         return [role.value for role in self]
 
@@ -40,10 +40,13 @@ class UserRoleList(List[UserRole]):
         Create a UserRoleList instance from JSON data.
 
         Args:
-            data (Union[List[str], List[dict]]): A list of role values as strings or dicts.
+            data (Union[List[str], List[dict]]): A list of role values as strings or dicts, where dicts must contain a 'value' key.
 
         Returns:
-            UserRoleList: A new UserRoleList instance.
+            UserRoleList: A new UserRoleList instance populated with UserRole objects.
+
+        Raises:
+            ValueError: If the input data is not in the expected format.
         """
         roles = []
         for item in data:

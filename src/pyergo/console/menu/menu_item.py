@@ -1,7 +1,7 @@
 from typing import Optional, Union
 
 from ...ioutils.constants import IO__DEFAULT_MAX_WIDTH
-from ...exceptions import CommandNotFoundError
+from ...exceptions.err_commmand_not_found import CommandNotFoundError
 
 from ...ioutils.output import Print, PrintBorder
 
@@ -10,6 +10,11 @@ from .stubs import Menu
 
 
 class MenuItem:
+    """
+    Represents a single item in a menu. Each item has a key, description, action, and parent menu.
+    It also supports additional features like action arguments, help text, display condition, display name, and active condition.
+    """
+
     def __init__(self,
                  key: str,
                  description: str,
@@ -26,6 +31,20 @@ class MenuItem:
 
                  active_condition: Union[callable, bool] = True,
                  ):
+        """
+        Initializes a MenuItem instance.
+
+        Args:
+            key (str): The unique identifier for the menu item.
+            description (str): A brief description of the menu item.
+            action (callable): The function to be executed when the menu item is selected.
+            parent (Menu): The parent menu that this item belongs to.
+            action_args (list, optional): Additional arguments to be passed to the action function. Defaults to [].
+            help_text (Optional[str], optional): The help text for the menu item. Defaults to None.
+            display_condition (Union[callable, bool], optional): A condition to determine if the item should be displayed. Defaults to True.
+            display_name (Optional[str], optional): The name to be displayed for the menu item. Defaults to None.
+            active_condition (Union[callable, bool], optional): A condition to determine if the item is active. Defaults to True.
+        """
         if len(key.split(" ")) > 1:
             cmd, *args = key.split(" ")
             self.key = cmd
@@ -52,16 +71,34 @@ class MenuItem:
             raise ValueError("Display condition must be a callable or a boolean")
 
     def __str__(self):
+        """
+        Returns a string representation of the menu item.
+
+        Returns:
+            str: A string in the format "key: display_name - description".
+        """
         return f"{self.key}: {self.display_name} - {self.description}"
     
     @property
     def visible(self) -> bool:
+        """
+        Checks if the menu item is visible based on the display condition.
+
+        Returns:
+            bool: True if the item is visible, False otherwise.
+        """
         if callable(self.display_condition):
             return self.display_condition()
         return self.display_condition
     
     @property
-    def active (self) -> bool:
+    def active(self) -> bool:
+        """
+        Checks if the menu item is active based on the active condition.
+
+        Returns:
+            bool: True if the item is active, False otherwise.
+        """
         if callable(self.active_condition):
             return self.active_condition()
         return self.active_condition
@@ -69,6 +106,15 @@ class MenuItem:
 
 
     def execute(self, *args):
+        """
+        Executes the action associated with the menu item.
+
+        Args:
+            *args: Additional arguments to be passed to the action function.
+
+        Returns:
+            The result of the action function execution.
+        """
         if "-help" in args:
             if 'help' in self.parent.commands:
                 self.parent.execute('help', self.key)
@@ -83,12 +129,25 @@ class MenuItem:
         args = self.action_args + args
         return self.action(*args, **kwargs)
 
-class SystemActionMenuItem (MenuItem):
+class SystemActionMenuItem(MenuItem):
+    """
+    A specialized MenuItem for system actions like help.
+    """
+
     CONFIGURED_SYSTEMS_ACTIONS_LIST = [
         'help'
     ]
 
     def execute(self, *args):
+        """
+        Executes the action associated with the system action menu item.
+
+        Args:
+            *args: Additional arguments to be passed to the action function.
+
+        Returns:
+            The result of the action function execution.
+        """
         if self.key == 'help':
             # Command Help
             cmdkey = args[0] or None
@@ -117,4 +176,3 @@ class SystemActionMenuItem (MenuItem):
             input("Press Enter to continue...")
         else:
             return super().execute(*args)
-
