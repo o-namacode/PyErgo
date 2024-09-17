@@ -1,13 +1,14 @@
 import json
 import os
 from pathlib import Path
-from typing import Generator, List
+from typing import Generator, List, TypeVar, Generic
 
 from ..interfaces import IUserAccount
 from ..fileutils import safedir
 
+T = TypeVar('T', bound=IUserAccount)
 
-class UserManager[T:IUserAccount]:
+class UserManager (Generic[T]):
     USER_DATA_DIR = safedir(os.path.join(os.path.expanduser("~"), ".pyergo", "users"))
     USER_FILE_EXT = ".umf"
 
