@@ -34,7 +34,7 @@ class IUserAccount (ABC):
             if hasattr(self, key):
                 if key in ['created_at', 'updated_at']:
                     setattr(self, key, datetime.fromisoformat(value) if isinstance(value, str) else value)
-                elif key == 'roles':
+                elif key in ['roles']:
                     setattr(self, key, UserRoleList.from_json(value) if isinstance(value, (list, dict)) else value)
                 else:
                     setattr(self, key, value)
