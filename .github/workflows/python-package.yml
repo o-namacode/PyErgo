@@ -5,7 +5,7 @@ name: Python Package
 
 on:
   push:
-    branches: [ "main" , "feature__*" , "*bugfix*" ]
+    branches: [ "feature__*" , "*bugfix*" ]
     tags: [ "*bugfix*" , "v*" ]
 
 jobs:
