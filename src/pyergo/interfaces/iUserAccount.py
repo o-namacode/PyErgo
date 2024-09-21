@@ -15,7 +15,13 @@ class IUserAccount (ABC):
 
     roles : UserRoleList
 
-    def __init__(self, id : Optional[Union[str, UUID]] = None, **kwargs):
+    def __init__(
+        self, 
+        id : Optional[Union[str, UUID]] = None, 
+        
+        ef__raise_error_on_key_not_found : bool = False, 
+        
+        *args, **kwargs):
         """
         Initializes a new instance of IUserAccount.
 
@@ -39,8 +45,10 @@ class IUserAccount (ABC):
                 else:
                     setattr(self, key, value)
             else:
-                raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
-    
+                if ef__raise_error_on_key_not_found:
+                    raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
+
+        super().__init__(*args, **kwargs)
     def __str__(self):
         """
         Returns a string representation of the user account.
