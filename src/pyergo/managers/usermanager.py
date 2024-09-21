@@ -3,14 +3,19 @@ import os
 from pathlib import Path
 from typing import Generator, List, TypeVar, Generic
 
-from ..constants import PYERGO__LIBRARY_USERS_DATASTORE_DIR, PYERGO__LIBRARY_USERSFILE_DIR, PYERGO__LIBRARY_USERS_FILE_EXT
-from ..interfaces import IUserAccount
+from ..constants import ( 
+    PYERGO__LIBRARY_USERS_DATASTORE_DIR, 
+    PYERGO__LIBRARY_USERSFILE_DIR, 
+    PYERGO__LIBRARY_USERS_FILE_EXT
+)
+
+from ..interfaces import IUserAccount, IUserManager
 from ..fileutils import safedir
 
 
 T = TypeVar('T', bound=IUserAccount)
 
-class UserManager (Generic[T]):
+class UserManager (IUserManager, Generic[T]):
     USER_FILE_DIR = PYERGO__LIBRARY_USERSFILE_DIR
     USER_DATASTORE_DIR = PYERGO__LIBRARY_USERS_DATASTORE_DIR
     USER_FILE_EXT = PYERGO__LIBRARY_USERS_FILE_EXT
