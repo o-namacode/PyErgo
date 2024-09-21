@@ -5,7 +5,7 @@ name: Python Package
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" , "feature__*"]
   pull_request:
     branches: [ "main" ]
 
