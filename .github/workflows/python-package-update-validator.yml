@@ -1,12 +1,13 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python Package
+name: Python Package Update Validator
 
 on:
   push:
-    branches: [ "feature__*" , "*bugfix*" ]
-    tags: [ "*bugfix*" , "v*" ]
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:

@@ -15,7 +15,13 @@ class IUserAccount (ABC):
 
     roles : UserRoleList
 
-    def __init__(self, id : Optional[Union[str, UUID]] = None, **kwargs):
+    def __init__(
+        self, 
+        id : Optional[Union[str, UUID]] = None, 
+        
+        ef__raise_error_on_key_not_found : bool = False, 
+        
+        *args, **kwargs):
         """
         Initializes a new instance of IUserAccount.
 
@@ -34,13 +40,15 @@ class IUserAccount (ABC):
             if hasattr(self, key):
                 if key in ['created_at', 'updated_at']:
                     setattr(self, key, datetime.fromisoformat(value) if isinstance(value, str) else value)
-                elif key == 'roles':
+                elif key in ['roles']:
                     setattr(self, key, UserRoleList.from_json(value) if isinstance(value, (list, dict)) else value)
                 else:
                     setattr(self, key, value)
             else:
-                raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
-    
+                if ef__raise_error_on_key_not_found:
+                    raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
+
+        super().__init__(*args, **kwargs)
     def __str__(self):
         """
         Returns a string representation of the user account.
