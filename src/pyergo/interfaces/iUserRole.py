@@ -1,6 +1,6 @@
-from enums import StrEnum
 from abc import ABC
+from enum import StrEnum
 
 
-class iUserRole (ABC, StrEnum):
+class IUserRole (ABC, StrEnum):
     pass
