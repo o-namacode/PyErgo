@@ -1,12 +1,12 @@
 
 from typing import Generic, List, TypeVar, Union
 
-from ..interfaces import iUserRole, iUserAccount, iUserManager
+from ..interfaces import IUserRole, IUserAccount, IUserManager
 
 
-TUser = TypeVar("TUser", bound=iUserAccount)
-TUserRole = TypeVar("TUserRole", bound=iUserRole)
-TUserManager = TypeVar("TUserManager", bound=iUserManager)
+TUser = TypeVar("TUser", bound=IUserAccount)
+TUserRole = TypeVar("TUserRole", bound=IUserRole)
+TUserManager = TypeVar("TUserManager", bound=IUserManager)
 
 
 class RoleManager (Generic[TUser, TUserRole, TUserManager]):
