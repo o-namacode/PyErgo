@@ -15,7 +15,7 @@ class TokenGenerator:
         e = n + valid_for
 
         return Token[str](
-            value=md5(f"{n.strftime("%d%m%Y%H%M%S")}".encode()).hexdigest(),
+            value=md5(f"{n.strftime('%d%m%Y%H%M%S')}".encode()).hexdigest(),
             name='remember_me',
             specs=TokenSpecs(
                 type=TokenType.MD5,
