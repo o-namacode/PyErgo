@@ -12,11 +12,11 @@ class UserWithTokens (IUserAccount):
             
             ef__raise_error_on_key_not_found: bool = False, 
             *args, **kwargs):
-        
-        super().__init__(id, ef__raise_error_on_key_not_found, *args, **kwargs)
-        
-        # Properties 
+        # Built-in Properties 
         self.tk_remember : Optional[str] = kwargs.get('tk_remember', None)
+
+
+        super().__init__(id, ef__raise_error_on_key_not_found, *args, **kwargs)
 
     
     def token(self, key : str, default = None):
@@ -31,6 +31,11 @@ class UserWithTokens (IUserAccount):
         return default
 
     def settoken(self, key : str, value):
-        tname = f"{self.TOKEN_PREFIX}{key}".lower()
+
+        if key.lower().startswith(self.TOKEN_PREFIX):
+            tname = key.lower()
+        else:
+            tname = f"{self.TOKEN_PREFIX}{key}".lower()
+
         setattr(self, tname, value)
         return self
