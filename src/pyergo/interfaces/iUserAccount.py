@@ -33,7 +33,7 @@ class IUserAccount (ABC):
         Raises:
             AttributeError: If an invalid attribute is provided in kwargs.
         """
-        uid = UUID(id) if id is not None else uuid4()
+        uid = UUID(id) if isinstance(id, str) else id if id is not None else uuid4()
         self.id = str(uid).replace('-', '')
 
         for key, value in kwargs.items():
