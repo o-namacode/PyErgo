@@ -1,6 +1,8 @@
 from enum import StrEnum
 
-class UserRole(StrEnum):
+from ..interfaces import IUserRole
+
+class UserRole(StrEnum, IUserRole):
     SUPER_ADMIN = "su"
     ADMIN = "admin"
     USER = "user"
