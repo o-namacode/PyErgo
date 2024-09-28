@@ -1,9 +1,9 @@
 from typing import List, Union
 
-from ..enums import UserRole
+from ..interfaces import IUserRole
 
 
-class UserRoleList(List[UserRole]):
+class UserRoleList(List[IUserRole]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
