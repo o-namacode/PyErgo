@@ -18,7 +18,7 @@ class UserWithPassword (IUserAccount):
             ef__raise_error_on_key_not_found: bool = False, 
             *args, **kwargs):
         # Built-in Properties 
-        self.password : Optional[str] = None
+        self.password : str = ''
         if password:
             self.setpassw(password) 
 
