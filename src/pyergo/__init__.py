@@ -14,4 +14,5 @@ from . import (
     managers, 
     models, 
     users,
+    utilities,
 )
