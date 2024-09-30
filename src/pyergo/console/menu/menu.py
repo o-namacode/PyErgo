@@ -362,5 +362,8 @@ class Menu:
         else:
             self.f_exit = True
 
-    def add_quit_option(self):
-        self.add("q", "Exit the current menu.", self.exit)
+    def add_quit_option(
+            self, 
+            key : str = 'q', 
+            display_text : str = "Exit the current menu."):
+        self.add(key, display_text, self.exit)
