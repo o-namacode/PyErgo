@@ -36,6 +36,8 @@ class Menu:
 
             menu_builder: Callable[['Menu'], None] = lambda menu: None,
             menu_items: list[Union[MenuItem, 'Menu']] = [],
+
+            menu_exit_fn: Callable[['Menu'], None] = None,
             ):
         
         
@@ -61,6 +63,10 @@ class Menu:
                 raise ArgumentMissingError('parent')
             
             self.parent = parent
+
+        # Menu Function Overrides
+        if menu_exit_fn:
+            self.fn_exit = menu_exit_fn
 
     @property
     def key(self) -> str:
@@ -350,6 +356,11 @@ class Menu:
         fn_postloop()
         self.f_in_loop = False
 
+    def exit(self):
+        if hasattr(self, 'fn_exit'):
+            self.fn_exit(self)
+        else:
+            self.f_exit = True
 
     def add_quit_option(self):
         self.add("q", "Exit the current menu.", self.exit)
