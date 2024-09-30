@@ -51,9 +51,9 @@ class UserRoleList(List[IUserRole]):
         roles = []
         for item in data:
             if isinstance(item, dict) and 'value' in item:
-                roles.append(UserRole(item['value']))
+                roles.append(IUserRole(item['value']))
             elif isinstance(item, str):
-                roles.append(UserRole(item))
+                roles.append(IUserRole(item))
             else:
                 raise ValueError(f"Invalid role data: {item}")
         return cls(roles)
