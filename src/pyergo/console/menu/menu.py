@@ -28,7 +28,7 @@ class Menu:
 
     def __init__(
             self,
-            title: str,
+            title: Optional[str] = None,
             description: Optional[str] = None,
 
             key: Optional[str] = None,
@@ -302,6 +302,7 @@ class Menu:
             fn_preloop :  callable = lambda: None,
             fn_postloop :  callable = lambda: None,
             fn_loop_step :  callable = lambda: None,
+            fn_loop_step_after_menu :  callable = lambda: None,
 
             fn_clear_console :  callable = lambda: system("cls"),
             clear_console : bool = True,
@@ -323,6 +324,8 @@ class Menu:
                     inline = False,
                     sort = sort_menu_items,
                 )
+
+            fn_loop_step_after_menu()
 
             if display_available_commands:
                 commands_str = "Available commands: " + ", ".join(self.commands)
@@ -348,3 +351,5 @@ class Menu:
         self.f_in_loop = False
 
 
+    def add_quit_option(self):
+        self.add("q", "Exit the current menu.", self.exit)
