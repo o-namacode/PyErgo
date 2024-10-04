@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from .fileutils import safedir
 
 
@@ -8,12 +9,12 @@ def pyergo_lib__project_basedir(project_dir : str):
 
 
 PYERGO__LIBRARY_USERSFILE_DIR = safedir(os.path.join(PYERGO__LIBRARY_BASEDIR, "users"))
-def pyergo_lib__usersfile_dir(project_dir : str):
-    return safedir(os.path.join(PYERGO__LIBRARY_BASEDIR, project_dir, "users"))
+def pyergo_lib__usersfile_dir(project_dir : str, basedir : Path = PYERGO__LIBRARY_BASEDIR):
+    return safedir(os.path.join(basedir, project_dir, "users"))
 
 PYERGO__LIBRARY_USERS_FILE_EXT = ".umf"
 PYERGO__LIBRARY_USERS_DATASTORE_DIR = safedir(os.path.join(PYERGO__LIBRARY_BASEDIR, "__usersstore__"))
-def pyergo_lib__users_datastore_dir (project_dir : str):
-    return safedir(os.path.join(PYERGO__LIBRARY_BASEDIR, project_dir, "__usersstore__"))
+def pyergo_lib__users_datastore_dir (project_dir : str, basedir : Path = PYERGO__LIBRARY_BASEDIR):
+    return safedir(os.path.join(basedir, project_dir, "__usersstore__"))
 
 
