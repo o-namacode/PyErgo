@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from ..interfaces import IUserRole
+from ..interfaces.iUserRole import IUserRole
 
 
 class UserRoleList(List[IUserRole]):
