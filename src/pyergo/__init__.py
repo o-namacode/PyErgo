@@ -1,7 +1,8 @@
 from .constants import *
+from . import ctypes_ 
+
 from . import (
     console,
-    ctypes_, 
     encoders, 
     encryption, 
     enums, 
