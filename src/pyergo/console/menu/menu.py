@@ -9,7 +9,10 @@ from ...exceptions.err_argument_missing import ArgumentMissingError
 from ...ioutils.output import PrintBorder, PrintWithBorder, PrintLines, Print
 from ...ioutils.getinput import getinput
 
-from .stubs import MenuItem
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .menu_item import MenuItem
 
 class Menu:
     """
@@ -35,7 +38,7 @@ class Menu:
             parent: Optional['Menu'] = None,
 
             menu_builder: Callable[['Menu'], None] = lambda menu: None,
-            menu_items: list[Union[MenuItem, 'Menu']] = [],
+            menu_items: list[Union['MenuItem', 'Menu']] = [],
             ):
         
         
@@ -113,13 +116,13 @@ class Menu:
         ...
 
     @overload
-    def add(self, item: MenuItem) -> 'Menu':
+    def add(self, item: 'MenuItem') -> 'Menu':
         """
         Overloaded method to add a MenuItem directly.
         """
         ...
     
-    def add(self, item_or_key: Union[str, MenuItem], description: Optional[str] = None, action: Optional[Callable] = None, display_condition: Union[bool, Callable] = True) -> 'Menu':
+    def add(self, item_or_key: Union[str, 'MenuItem'], description: Optional[str] = None, action: Optional[Callable] = None, display_condition: Union[bool, Callable] = True) -> 'Menu':
         """
         Adds a menu item or a key to the menu.
 
@@ -140,13 +143,13 @@ class Menu:
                     key=item_or_key,
                     description=description,
                     action=action,
+                    parent=self,
                     display_condition=display_condition,
-                    parent=self
                 )
             )
         return self
 
-    def remove(self, item_or_key: Union[str, MenuItem]) -> 'Menu':
+    def remove(self, item_or_key: Union[str, 'MenuItem']) -> 'Menu':
         """
         Removes a menu item by key or MenuItem.
 
