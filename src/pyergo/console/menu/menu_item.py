@@ -6,7 +6,12 @@ from ...exceptions.err_commmand_not_found import CommandNotFoundError
 from ...ioutils.output import Print, PrintBorder
 
 from .helpers import parse_args
-from .stubs import Menu
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .menu import Menu
+
 
 
 class MenuItem:
