@@ -1,4 +1,7 @@
-def parse_args(args: list[str]) :
+from typing import Any
+
+
+def parse_args(args : tuple[Any]) :
     """
     Parse the arguments for a MenuItem execution.
     """
