@@ -280,7 +280,7 @@ class Menu:
             items = sorted(items, key=lambda x: (x.key in ['logout', 'q', 'exit'], x.key))
 
         def build_str(a, b, sep = "|"):
-            return a.ljust(cmd_len) + sep + " " * 4 + b.ljust(desc_len - 4)
+            return a.ljust(cmd_len) + sep + " " * 4 + b.ljust(desc_len - 5)
 
         if not inline:
             if self.title:
@@ -288,7 +288,7 @@ class Menu:
                 PrintWithBorder(self.title, width=width)
                 PrintBorder(width=width)
                 if self.description:
-                    PrintWithBorder(self.description, width=width)
+                    PrintWithBorder(self.description.strip(), width=width)
                     PrintBorder(width=width)
 
             fn_display_after_title()
