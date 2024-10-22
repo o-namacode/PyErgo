@@ -261,6 +261,9 @@ class Menu:
         sort: bool = True,
 
 
+        fn_display_after_title :  Callable = lambda: None,
+
+
         ):
         cmd_len = width // 3
         desc_len = width - cmd_len - 1
@@ -288,6 +291,8 @@ class Menu:
                     PrintWithBorder(self.description, width=width)
                     PrintBorder(width=width)
 
+            fn_display_after_title()
+
             if len(items) > 0:
                 PrintBorder(width=width)
                 PrintWithBorder(build_str("Command", "Description"), width=width)
@@ -308,6 +313,7 @@ class Menu:
             fn_preloop :  Callable = lambda: None,
             fn_postloop :  Callable = lambda: None,
             fn_loop_step :  Callable = lambda: None,
+            fn_loop_step_after_title :  Callable = lambda: None,
             fn_loop_step_after_menu :  Callable = lambda: None,
 
             fn_clear_console :  Callable = lambda: system("cls"),
@@ -329,6 +335,7 @@ class Menu:
                 self.display_menu(
                     inline = False,
                     sort = sort_menu_items,
+                    fn_display_after_title=fn_loop_step_after_title,
                 )
 
             fn_loop_step_after_menu()
