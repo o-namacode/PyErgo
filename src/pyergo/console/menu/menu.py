@@ -1,5 +1,6 @@
 from os import system
 from typing import Callable, Optional, Union, overload
+from uuid import uuid4
 
 from ...exceptions.err_commmand_not_found import CommandNotFoundError
 
@@ -41,7 +42,7 @@ class Menu:
             menu_items: list[Union['MenuItem', 'Menu']] = [],
             ):
 
-
+        self.__uid = uuid4()
 
         # Menu Details
         self.title = title or ''
