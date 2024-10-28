@@ -1,5 +1,6 @@
 from os import system
 from typing import Callable, Optional, Union, overload
+from uuid import uuid4
 
 from ...exceptions.err_commmand_not_found import CommandNotFoundError
 
@@ -9,7 +10,10 @@ from ...exceptions.err_argument_missing import ArgumentMissingError
 from ...ioutils.output import PrintBorder, PrintWithBorder, PrintLines, Print
 from ...ioutils.getinput import getinput
 
-from .stubs import MenuItem
+# from typing import TYPE_CHECKING
+
+# if TYPE_CHECKING:
+from .menu_item import MenuItem
 
 class Menu:
     """
@@ -35,15 +39,13 @@ class Menu:
             parent: Optional['Menu'] = None,
 
             menu_builder: Callable[['Menu'], None] = lambda menu: None,
-            menu_items: list[Union[MenuItem, 'Menu']] = [],
-
-            menu_exit_fn: Callable[['Menu'], None] = None,
+            menu_items: list[Union['MenuItem', 'Menu']] = [],
             ):
-        
-        
+
+        self.__uid = uuid4()
 
         # Menu Details
-        self.title = title
+        self.title = title or ''
         self.description = description
 
         # Menu Elements
@@ -61,12 +63,8 @@ class Menu:
 
             if parent is None:
                 raise ArgumentMissingError('parent')
-            
-            self.parent = parent
 
-        # Menu Function Overrides
-        if menu_exit_fn:
-            self.fn_exit = menu_exit_fn
+            self.parent = parent
 
     @property
     def key(self) -> str:
@@ -97,7 +95,7 @@ class Menu:
         Clears all menu items from the menu.
         """
         self.menu_items = []
-    
+
     def build(self):
         """
         Builds the menu using the provided menu builder function.
@@ -110,22 +108,22 @@ class Menu:
         """
         self.clear()
         self.build()
-    
+
     @overload
-    def add(self, key: str, description: str, action: Callable, display_condition: Union[bool, Callable] = True) -> 'Menu':
+    def add(self, item_or_key: str, description: str, action: Callable, display_condition: Union[bool, Callable] = True) -> 'Menu':
         """
         Overloaded method to add a menu item using key, description, action, and display condition.
         """
         ...
 
     @overload
-    def add(self, item: MenuItem) -> 'Menu':
+    def add(self, item_or_key: 'MenuItem') -> 'Menu':
         """
         Overloaded method to add a MenuItem directly.
         """
         ...
-    
-    def add(self, item_or_key: Union[str, MenuItem], description: Optional[str] = None, action: Optional[Callable] = None, display_condition: Union[bool, Callable] = True) -> 'Menu':
+
+    def add(self, item_or_key: Union[str, 'MenuItem'], description: Optional[str] = None, action: Optional[Callable] = None, display_condition: Union[bool, Callable] = True) -> 'Menu':
         """
         Adds a menu item or a key to the menu.
 
@@ -138,21 +136,25 @@ class Menu:
         Returns:
             Menu: The current menu instance.
         """
+
         if isinstance(item_or_key, MenuItem):
             self.menu_items.append(item_or_key)
         else:
+            if action is None:
+                action = lambda: None
+
             self.menu_items.append(
                 MenuItem(
                     key=item_or_key,
-                    description=description,
+                    description=description or '',
                     action=action,
+                    parent=self,
                     display_condition=display_condition,
-                    parent=self
                 )
             )
         return self
 
-    def remove(self, item_or_key: Union[str, MenuItem]) -> 'Menu':
+    def remove(self, item_or_key: Union[str, 'MenuItem']) -> 'Menu':
         """
         Removes a menu item by key or MenuItem.
 
@@ -167,7 +169,7 @@ class Menu:
         else:
             self.menu_items = [item for item in self.menu_items if item.key != item_or_key]
         return self
-    
+
 
     @property
     def commands(self) -> list[str]:
@@ -185,7 +187,7 @@ class Menu:
         Returns a list of visible command keys from the menu
         """
         return [item.key for item in self.menu_items if isinstance(item, MenuItem) and item.visible]
-        
+
     def commands_str(self, sort: bool = False) -> str:
         """
         Generates a string representation of the commands.
@@ -216,7 +218,7 @@ class Menu:
         """
         return key in self.commands
 
-    def get(self, key: str) -> Optional[MenuItem]:
+    def get(self, key: str) -> Optional['MenuItem']:
         """
         Retrieves a MenuItem by its key.
 
@@ -248,8 +250,7 @@ class Menu:
         """
         item = self.get(key)
         if item:
-            args = item.action_args + args
-            kwargs = {**item.action_kwargs, **kwargs}
+            args = item.action_args + [x for x in args]
             return item.execute(*args, **kwargs)
         else:
             raise CommandNotFoundError(key)
@@ -257,10 +258,13 @@ class Menu:
     def display_menu(
         self,
         inline: bool = False,
-        width: Optional[int] = IO__DEFAULT_MAX_WIDTH,
+        width: int = IO__DEFAULT_MAX_WIDTH,
         sort: bool = True,
 
-        
+
+        fn_display_after_title :  Callable = lambda: None,
+
+
         ):
         cmd_len = width // 3
         desc_len = width - cmd_len - 1
@@ -268,7 +272,7 @@ class Menu:
         items = []
 
         for item in self.menu_items:
-            if isinstance(item, MenuItem):            
+            if isinstance(item, MenuItem):
                 if item.visible:
                     items.append(item)
                     continue
@@ -277,7 +281,7 @@ class Menu:
             items = sorted(items, key=lambda x: (x.key in ['logout', 'q', 'exit'], x.key))
 
         def build_str(a, b, sep = "|"):
-            return a.ljust(cmd_len) + sep + " " * 4 + b.ljust(desc_len - 4)
+            return a.ljust(cmd_len) + sep + " " * 4 + b.ljust(desc_len - 5)
 
         if not inline:
             if self.title:
@@ -285,8 +289,10 @@ class Menu:
                 PrintWithBorder(self.title, width=width)
                 PrintBorder(width=width)
                 if self.description:
-                    PrintWithBorder(self.description, width=width)
+                    PrintWithBorder(self.description.strip(), width=width)
                     PrintBorder(width=width)
+
+            fn_display_after_title()
 
             if len(items) > 0:
                 PrintBorder(width=width)
@@ -298,19 +304,20 @@ class Menu:
                     PrintWithBorder(build_str(item.key, item.description), width=width)
             PrintBorder(width=width)
             PrintLines(2)
-    
+
     def loop(
             self,
 
             display_menu :  bool = True,
             display_available_commands :  bool = True,
 
-            fn_preloop :  callable = lambda: None,
-            fn_postloop :  callable = lambda: None,
-            fn_loop_step :  callable = lambda: None,
-            fn_loop_step_after_menu :  callable = lambda: None,
+            fn_preloop :  Callable = lambda: None,
+            fn_postloop :  Callable = lambda: None,
+            fn_loop_step :  Callable = lambda: None,
+            fn_loop_step_after_title :  Callable = lambda: None,
+            fn_loop_step_after_menu :  Callable = lambda: None,
 
-            fn_clear_console :  callable = lambda: system("cls"),
+            fn_clear_console :  Callable = lambda: system("cls"),
             clear_console : bool = True,
 
             sort_menu_items :  bool = True,
@@ -329,6 +336,7 @@ class Menu:
                 self.display_menu(
                     inline = False,
                     sort = sort_menu_items,
+                    fn_display_after_title=fn_loop_step_after_title,
                 )
 
             fn_loop_step_after_menu()
@@ -341,7 +349,7 @@ class Menu:
                 break
 
             userinput = getinput(allow_empty = True)
-            
+
             if not userinput:
                 continue
 
@@ -357,13 +365,7 @@ class Menu:
         self.f_in_loop = False
 
     def exit(self):
-        if hasattr(self, 'fn_exit'):
-            self.fn_exit(self)
-        else:
-            self.f_exit = True
+        self.f_exit = True
 
-    def add_quit_option(
-            self, 
-            key : str = 'q', 
-            display_text : str = "Exit the current menu."):
-        self.add(key, display_text, self.exit)
+    def add_quit_option(self):
+        self.add("q", "Exit the current menu.", self.exit)

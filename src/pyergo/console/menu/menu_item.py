@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 from ...ioutils.constants import IO__DEFAULT_MAX_WIDTH
 from ...exceptions.err_commmand_not_found import CommandNotFoundError
@@ -6,7 +6,12 @@ from ...exceptions.err_commmand_not_found import CommandNotFoundError
 from ...ioutils.output import Print, PrintBorder
 
 from .helpers import parse_args
-from .stubs import Menu
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .menu import Menu
+
 
 
 class MenuItem:
@@ -19,17 +24,17 @@ class MenuItem:
                  key: str,
                  description: str,
 
-                 action: callable,
+                 action: Callable,
                  parent: 'Menu',
 
                  action_args: list = [],
 
                  help_text: Optional[str] = None,
 
-                 display_condition: Union[callable, bool] = True,
+                 display_condition: Union[Callable, bool] = True,
                  display_name: Optional[str] = None,
 
-                 active_condition: Union[callable, bool] = True,
+                 active_condition: Union[Callable, bool] = True,
                  ):
         """
         Initializes a MenuItem instance.
@@ -58,7 +63,7 @@ class MenuItem:
 
         self.description = description
         self.help_text = help_text or self.description
-        
+
         self.action = action
 
         self.display_condition = display_condition
@@ -78,7 +83,7 @@ class MenuItem:
             str: A string in the format "key: display_name - description".
         """
         return f"{self.key}: {self.display_name} - {self.description}"
-    
+
     @property
     def visible(self) -> bool:
         """
@@ -90,7 +95,7 @@ class MenuItem:
         if callable(self.display_condition):
             return self.display_condition()
         return self.display_condition
-    
+
     @property
     def active(self) -> bool:
         """
@@ -102,7 +107,7 @@ class MenuItem:
         if callable(self.active_condition):
             return self.active_condition()
         return self.active_condition
-        
+
 
 
     def execute(self, *args):
@@ -125,7 +130,7 @@ class MenuItem:
             return
 
         args, kwargs = parse_args(args)
-        
+
         args = self.action_args + args
         return self.action(*args, **kwargs)
 
@@ -153,7 +158,7 @@ class SystemActionMenuItem(MenuItem):
             cmdkey = args[0] or None
             content = ""
             title = ("-" * 5 ) + "  Help  "
-            
+
             if cmdkey:
                 # Get help context for specific command
                 cmd = self.parent.get(cmdkey)
@@ -162,7 +167,7 @@ class SystemActionMenuItem(MenuItem):
                     title += f"-  {cmd.display_name}  "
                     content += cmd.help_text
                 else:
-                    content += str(CommandNotFoundError())
+                    content += repr(CommandNotFoundError("'None'"))
             else:
                 # Get General Help Menu
                 pass

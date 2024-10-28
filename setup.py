@@ -21,7 +21,7 @@ setup(
     long_description=long_description or '',
     long_description_content_type='text/markdown',
 
-    version="0.1.2",
+    version="0.1.2.5",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=install_requires,
